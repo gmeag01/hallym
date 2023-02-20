@@ -11,7 +11,7 @@ Dataset : 흉부 X-Ray 전/후방 이미지
 Target : 정상 = 1 / 세균성 폐렴 = 0 / 바이러스성 폐렴 = 2
 '''
 
-def MakeAnnotationFile(dirPath):
+def MakeAnnotationFile(dirPath, fileName):
     dataDic = {'name':[], 'class':[], 'path':[]}
     
     try:
@@ -27,7 +27,8 @@ def MakeAnnotationFile(dirPath):
             dataDic['path'].extend(imgPath)
 
         df = pd.DataFrame(dataDic)
-        df.to_csv(os.path.join(dirPath, 'chestImages.csv'))
+        df = pd.get_dummies(df, columns=['class'])
+        df.to_csv(os.path.join(dirPath, fileName))
     except Exception as e:
         print(e)
 
@@ -41,7 +42,6 @@ class CustomImageDataset(Dataset):
     def __getitem__(self, idx):
         imgPath = self.imgInfo.iloc[idx, 2]
         img = read_image(imgPath)
-        target = self.imgInfo.iloc[idx, 1]
-        dataset = {'img':img, 'target':target}
+        target = self.imgInfo.iloc[idx, -3:].values
 
-        return dataset
+        return img, target
