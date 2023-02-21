@@ -35,13 +35,18 @@ def MakeAnnotationFile(dirPath, fileName):
 class CustomImageDataset(Dataset):
     def __init__(self, fileDir):
         self.imgInfo = pd.read_csv(fileDir, index_col=0)
+        # self.transform = transform
 
     def __len__(self):
         return len(self.imgInfo)
 
     def __getitem__(self, idx):
         imgPath = self.imgInfo.iloc[idx, 2]
-        img = read_image(imgPath)
+        image = read_image(imgPath)
         target = self.imgInfo.iloc[idx, -3:].values
 
-        return img, target
+        # if self.transform:
+        #     augmented = self.transform(image=image)
+        #     image = augmented['image']
+
+        return image, target
